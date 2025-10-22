@@ -1,0 +1,48 @@
+# Environment files
+.env
+.env.backup
+
+# Dependencies
+/vendor
+auth.json
+composer.phar
+/node_modules
+
+# Laravel framework
+/storage/pail
+storage/logs/*
+/storage/*.key
+storage/app/public/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+bootstrap/cache/*.php
+
+# Build files
+/public/hot
+/public/build
+/public/storage
+/public/js/app.js
+/public/css/app.css
+/public/mix-manifest.json
+
+# Testing
+/coverage/
+clover.xml
+.phpunit.cache/
+/.phpunit.cache
+.phpunit.result.cache
+
+# Logs
+*.log
+npm-debug.log*
+
+# Package manager files
+yarn.lock
+composer.lock
+package-lock.json
+
+# Deployment
+Homestead.json
+Homestead.yaml
