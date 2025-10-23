@@ -7,55 +7,196 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# Laravel Backend Assessment
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A comprehensive Laravel application showcasing user management with role-based permissions, email notifications, and RESTful API endpoints.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **User Management API** with role-based access control
+- **Email Notifications** for user registration
+- **Search & Pagination** functionality
+- **Database Factories & Seeders** for testing data
+- **Role-based Authorization** (Admin, Manager, User)
 
-## Learning Laravel
+## 📋 Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.2+
+- Composer
+- PostgreSQL
+- Laravel 11.x
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ⚡ Quick Start
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd laravel-backend-assessment
+   ```
 
-## Laravel Sponsors
+2. **Install dependencies**
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-### Premium Partners
+4. **Database setup**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+5. **Start the server**
+   ```bash
+   php artisan serve
+   ```
 
-## Contributing
+## 🔗 API Endpoints
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 📝 Create User
+**POST** `/api/users`
 
-## Code of Conduct
+Creates a new user account and sends confirmation emails.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Request Body:**
+```json
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123"
+}
+```
 
-## Security Vulnerabilities
+**Response (201):**
+```json
+{
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "created_at": "2024-10-22T10:30:00Z"
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Features:**
+- ✅ Name validation (3-50 characters)
+- ✅ Email validation (unique & format)
+- ✅ Password validation (minimum 8 characters)
+- ✅ Automatic email notifications to user & admin
+---
+
+### 👥 Get Users
+**GET** `/api/users`
+
+Retrieves paginated list of active users with role-based editing permissions.
+
+**Query Parameters:**
+- `search` (optional) - Search by name or email
+- `page` (optional) - Page number for pagination
+- `sortBy` (optional) - Sort by: `name`, `email`, `created_at`
+
+**Examples:**
+```bash
+GET /api/users
+GET /api/users?search=john
+GET /api/users?sortBy=name&page=2
+```
+
+**Response (200):**
+```json
+{
+    "page": 1,
+    "users": [
+        {
+            "id": 1,
+            "role": "user",
+            "can_edit": true,
+            "orders_count": 3,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "created_at": "2024-10-22T10:30:00Z"
+        }
+    ]
+}
+```
+
+**Features:**
+- ✅ Active users only
+- ✅ Case-insensitive search
+- ✅ Orders count for each user
+- ✅ Pagination (10 users per page)
+- ✅ Role-based `can_edit` permissions
+
+---
+
+## 🛡️ Role-Based Permissions
+
+The `can_edit` field in the Get Users API response indicates whether the currently logged-in user has permission to edit each user. Since this assessment doesn't include authentication process, a **mocked user** is used for demonstration purposes.
+
+### Current Mocked User
+```php
+$currentUser = [
+    'id' => 1,
+    'role' => 'admin',
+];
+```
+
+### Testing Different Roles
+You can modify the mocked user in `UserController@index()` to test different permission scenarios:
+
+```php
+// Test as Manager
+$currentUser = ['id' => 2, 'role' => 'manager'];
+
+// Test as Regular User  
+$currentUser = ['id' => 3, 'role' => 'user'];
+```
+
+**Note:** In a production environment, this would be replaced with actual authentication middleware to get the real logged-in user.
+
+---
+
+## 📧 Email Notifications
+
+### User Registration Emails
+When a new user registers, two emails are automatically sent:
+
+1. **Welcome Email** → Sent to the new user
+2. **Admin Notification** → Sent to administrators
+
+**Email Configuration:**
+Set these variables in your `.env` file:
+```env
+MAIL_PORT=587
+MAIL_MAILER=smtp
+MAIL_HOST=your-smtp-host
+MAIL_PASSWORD=your-password
+ADMIN_EMAIL=admin@example.com
+MAIL_USERNAME=your-email@example.com
+```
+
+---
+
+### API Testing
+Use tools like Postman, Insomnia, or curl:
+
+```bash
+# Create a new user
+curl -X POST http://localhost:8000/api/users \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"name":"Test User","email":"test@example.com","password":"password123"}'
+
+# Get users with search
+curl "http://localhost:8000/api/users?search=admin&sortBy=name" \
+  -H "Accept: application/json"
+```
+
+---
 
 ## License
-
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
